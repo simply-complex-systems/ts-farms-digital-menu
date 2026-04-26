@@ -1,0 +1,16 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release:
+    uses: simply-complex-systems/.github/.github/workflows/release-please-reusable.yml@main
+    with:
+      release-type: simple
+      package-name: ts-farms-digital-menu
