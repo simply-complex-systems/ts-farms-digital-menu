@@ -13,4 +13,3 @@ jobs:
     uses: simply-complex-systems/.github/.github/workflows/release-please-reusable.yml@main
     with:
       release-type: simple
-      package-name: ts-farms-digital-menu
