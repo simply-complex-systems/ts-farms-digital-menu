@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.0](https://github.com/simply-complex-systems/ts-farms-digital-menu/compare/v1.0.0...v1.1.0) (2026-04-26)
+
+
+### Features
+
+* **layout:** three-tier 50/25/25 layout options with video-zone variants ([#7](https://github.com/simply-complex-systems/ts-farms-digital-menu/issues/7)) ([1014d85](https://github.com/simply-complex-systems/ts-farms-digital-menu/commit/1014d85a1e556f3d33c66ab522bc83faaf4c366d)), closes [#6](https://github.com/simply-complex-systems/ts-farms-digital-menu/issues/6)
+* **menu:** 2026 reframe with strict design system, original logo, no fries ([#12](https://github.com/simply-complex-systems/ts-farms-digital-menu/issues/12)) ([f311ecb](https://github.com/simply-complex-systems/ts-farms-digital-menu/commit/f311ecbdae1596862a0ed834383709674ca9636a)), closes [#11](https://github.com/simply-complex-systems/ts-farms-digital-menu/issues/11)
+
 ## 1.0.0 (2026-04-26)
 
 
