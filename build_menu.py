@@ -9,14 +9,29 @@ from PIL import Image, ImageDraw, ImageFont, ImageFilter
 import segno
 import os
 import io
+import json
 import math
 import random
 
 # ---- canvas ----
 W, H = 1080, 1920
 HERE = os.path.dirname(os.path.abspath(__file__))
-OUT = os.path.join(HERE, "output", "menu_2026-05-02_portrait.png")
+SPECIALS_PATH = os.path.join(HERE, "specials.json")
 LOGO_PATH = os.path.join(HERE, "assets", "ts_farms_logo_chalk.png")
+
+# ---- weekly content (data, not code) ----
+DEFAULT_SPECIAL = "First market of the season — say hi at the booth!"
+DEFAULT_DATE = "2026-05-02"
+try:
+    with open(SPECIALS_PATH) as f:
+        _s = json.load(f)
+    SPECIAL_LINE = _s.get("line", DEFAULT_SPECIAL)
+    MARKET_DATE = _s.get("date", DEFAULT_DATE)
+except (FileNotFoundError, json.JSONDecodeError):
+    SPECIAL_LINE = DEFAULT_SPECIAL
+    MARKET_DATE = DEFAULT_DATE
+
+OUT = os.path.join(HERE, "output", f"menu_{MARKET_DATE}_portrait.png")
 
 # ---- palette ----
 BG_DARK = (22, 22, 22)
@@ -142,11 +157,10 @@ draw.text(((W - tagw)//2, title_y + 110), tagline, font=f_tag, fill=INK_DIM)
 TW_Y = 410
 brush_banner(draw, 80, TW_Y, W-160, 72, "THIS WEEK",
              font(F_DISPLAY, 44))
-# placeholder special text — farmer/THE_USER swaps weekly
+# weekly special text loaded from specials.json
 f_special = font(F_BODY_BOLD, 32)
-special_line = "First market of the season — say hi at the booth!"
-sw = text_w(draw, special_line, f_special)
-draw.text((W/2 - sw/2, TW_Y + 84), special_line, font=f_special, fill=INK)
+sw = text_w(draw, SPECIAL_LINE, f_special)
+draw.text((W/2 - sw/2, TW_Y + 84), SPECIAL_LINE, font=f_special, fill=INK)
 
 # ====================================================================
 # BREAKFAST SANDWICHES

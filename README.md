@@ -31,13 +31,20 @@ phone running LedArt and push it to the LED unit.
 
 ## Weekly cadence
 
-To refresh the special, edit one line in `build_menu.py`:
+To refresh the special, edit `specials.json`:
 
-```python
-special_line = "Your special here"
+```json
+{
+  "line": "Your special here",
+  "date": "2026-05-09"
+}
 ```
 
-Re-run `python build_menu.py` and re-upload via LedArt.
+Re-run `python build_menu.py`. The output filename is auto-derived from
+`date` (`output/menu_<date>_portrait.png`). Upload via LedArt.
+
+If `specials.json` is missing or malformed, the build falls back to a
+hardcoded default — it never breaks.
 
 ## Display target
 
@@ -64,6 +71,7 @@ zones in between.
 
 ```
 build_menu.py               renderer
+specials.json               weekly special — the only file you edit week-to-week
 requirements.txt            Pillow + segno
 assets/
   ts_farms_logo_chalk.png   logo composited into the header
@@ -72,6 +80,7 @@ reference/
   led_unit_ledart_app.jpeg               LedArt pairing flow reference
 output/
   menu_2026-05-02_portrait.png           current render
+docs/adr/                   architectural decision records (locked decisions)
 ```
 
 ## Source content
