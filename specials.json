@@ -1,0 +1,5 @@
+{
+  "line": "First market of the season — say hi at the booth!",
+  "date": "2026-05-02",
+  "notes": "Edit this file weekly. Re-run `python build_menu.py` to regenerate output/menu_<date>_portrait.png."
+}
