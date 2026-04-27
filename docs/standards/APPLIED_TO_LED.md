@@ -66,30 +66,38 @@ For a 1080×1920 portrait:
 
 ```
 0     ┌─────────────────────────────────┐
+      │  IDENTITY ZONE  (HOOK)          │  ~200 px
+      │  TS Farms logo, centered. No    │
+      │  wordmark — the logo + the food │
+      │  advertise the booth.           │
+280   ├─────────────────────────────────┤
       │                                 │
-      │  IDENTITY ZONE  (HOOK)          │  ~360 px
-      │  TS Farms logo + wordmark       │
-      │                                 │
-360   ├─────────────────────────────────┤
-      │                                 │
-      │  PROMOTIONAL ZONE  (HOOK)       │  ~480 px
+      │  PROMOTIONAL ZONE  (HOOK)       │  ~160 px
       │  Featured item / video frame    │
-      │  THIS WEEK headline             │
+      │  / THIS WEEK headline           │
+440   ├─────────────────────────────────┤
       │                                 │
-840   ├─────────────────────────────────┤
+      │  MENU ZONE  (PROOF)             │  ~1160 px
       │                                 │
-      │  MENU ZONE  (PROOF)             │  ~800 px
-      │  Three sections, even rhythm    │
+      │  Three sections, even rhythm.   │
+      │  Largest share — the proof      │
+      │  earns the surface.             │
       │                                 │
-1640  ├─────────────────────────────────┤
-      │                                 │
-      │  ACTION ZONE  (ACTION)          │  ~280 px
+1600  ├─────────────────────────────────┤
+      │  ACTION ZONE  (ACTION)          │  ~240 px
       │  QR + market info               │
-      │                                 │
-1920  └─────────────────────────────────┘
+1840  └─────────────────────────────────┘
 ```
 
 Margins: 80 px each side. Content width: 920 px.
+
+### Wordmark decision (locked 2026-04-26)
+
+The "BARNYARD GRILL" wordmark below the logo was retired. Rationale per
+THE_USER: TS Farms is sufficient branding; Tiffany's flat-top grill keeps
+people lined up the whole market — the booth doesn't need to advertise
+what it is. The logo is the only Level 1 element on the surface. The
+wordmark code path was removed from `build_menu.py`.
 
 ## The expressive node
 

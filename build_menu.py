@@ -19,11 +19,12 @@ Toggle positions in this build:
 
 Layout (Hook -> Proof -> Action stack per STYLE_MARKETING):
 
-  IDENTITY  (hook)   ~360 px   TS Farms logo + Barnyard Grill wordmark
-  PROMO     (hook)   ~480 px   featured-item zone — image when supplied,
+  IDENTITY  (hook)   ~200 px   TS Farms logo, centered. No wordmark —
+                               the logo + the food advertise the booth.
+  PROMO     (hook)   ~160 px   featured-item zone — image when supplied,
                                THIS WEEK headline otherwise
-  MENU      (proof)  ~640 px   three sections: Breakfast, Burgers, Ala Carte
-  ACTION    (action) ~280 px   QR + market info
+  MENU      (proof)  ~1160 px  three sections: Breakfast, Burgers, Ala Carte
+  ACTION    (action) ~240 px   QR + market info
 
 Run:  python build_menu.py
 Out:  output/menu_<date>_portrait.png
@@ -50,10 +51,10 @@ CONTENT_W = W - 2 * MARGIN_X  # 920
 
 # Zone heights — sum to (H - MARGIN_TOP - MARGIN_BOTTOM) = 1760.
 # Menu is the proof — it earns the largest share. Identity and promo are
-# the hook (smaller). Action is the terminal pause (smaller).
-ZONE_IDENTITY = 260
+# the hook (smaller). Action is the terminal pause.
+ZONE_IDENTITY = 200
 ZONE_PROMO = 160
-ZONE_MENU = 1100
+ZONE_MENU = 1160
 ZONE_ACTION = 240
 assert ZONE_IDENTITY + ZONE_PROMO + ZONE_MENU + ZONE_ACTION == H - MARGIN_TOP - MARGIN_BOTTOM
 
@@ -70,7 +71,6 @@ PAD_GENEROUS = 64
 # starts at Level 2. The contrast between levels is the hierarchy signal.
 # ============================================================================
 
-T_WORDMARK = 56   # Level 2 — wordmark (structural, bold uppercase)
 T_SECTION = 48    # Level 2 — section banner (uppercase, bold)
 T_PROMO = 56      # Level 2 — promo headline (THIS WEEK)
 T_ITEM = 40       # Level 3 — item name (bold)
@@ -215,18 +215,15 @@ def wrap_text(draw, s, fnt, max_w):
 # ============================================================================
 
 def render_identity(img, y_start):
-    """IDENTITY (hook). The expressive node — TS Farms line-art logo —
-    plus a structural Barnyard Grill wordmark below it.
-
-    The logo carries personality. The wordmark is structure.
+    """IDENTITY (hook). The TS Farms line-art logo, centered in its zone.
+    No wordmark — the logo and the food advertise the booth on their own.
+    The logo is the only Level 1 element on the surface; everything else
+    is structure.
     """
-    draw = ImageDraw.Draw(img)
-
-    wordmark_h = T_WORDMARK + PAD_DEFAULT
-    logo_max_h = ZONE_IDENTITY - wordmark_h - PAD_DEFAULT
+    logo_max_h = ZONE_IDENTITY - PAD_DEFAULT
 
     logo = Image.open(LOGO_PATH).convert("RGBA")
-    logo_target_w = 640
+    logo_target_w = 720
     logo_target_h = round(logo.height * (logo_target_w / logo.width))
     if logo_target_h > logo_max_h:
         logo_target_h = logo_max_h
@@ -234,11 +231,8 @@ def render_identity(img, y_start):
     logo = logo.resize((logo_target_w, logo_target_h), Image.LANCZOS)
 
     logo_x = (W - logo_target_w) // 2
-    logo_y = y_start
+    logo_y = y_start + (ZONE_IDENTITY - logo_target_h) // 2
     img.paste(logo, (logo_x, logo_y), logo)
-
-    wordmark_y = logo_y + logo_target_h + PAD_DEFAULT
-    draw_centered(draw, wordmark_y, "BARNYARD GRILL", bold(T_WORDMARK))
 
 
 def render_promo(img, y_start):
