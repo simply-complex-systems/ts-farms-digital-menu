@@ -108,7 +108,7 @@ def bold(size):
 # ============================================================================
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-LOGO_PATH = os.path.join(HERE, "assets", "ts_farms_logo_menu.png")
+LOGO_PATH = os.path.join(HERE, "assets", "ts_farms_logo.png")
 SPECIALS_PATH = os.path.join(HERE, "specials.json")
 
 DEFAULT_SPECIAL = "First market of the season — say hi at the booth!"
