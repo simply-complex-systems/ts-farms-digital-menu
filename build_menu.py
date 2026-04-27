@@ -1,322 +1,380 @@
 #!/usr/bin/env python3
-"""Render the TS Farms / Barnyard Grill portrait menu for the LED standee.
+"""TS Farms / Barnyard Grill — first-principles LED menu.
 
-Output: 1080x1920 PNG. Loadable on the HD-M10 LedArt app as a single slide.
-Iteration 1: layout + content. Native panel resolution to be confirmed and
-re-exported once we have it.
+Single 1080x1920 portrait PNG for an HD-M10 LED standee, loaded via the
+LedArt mobile app over Wi-Fi.
+
+Standards: see docs/standards/STANDARD_FORMATTING.txt
+                   docs/standards/STYLE_MARKETING.txt
+                   docs/standards/APPLIED_TO_LED.md
+
+Toggle positions in this build:
+  ONE_VOICE          ON          — DejaVu Sans, regular + bold only
+  ONE_INK            OFF, strict — black on white. No third color in v1.
+  BREATHE            FULL        — 80 px outer margins, generous rhythm
+  EARNED_DISTINCTION RELAXED     — reserved for the logo as expressive node
+  ONE_EXPRESSIVE_NODE ON         — the TS Farms line-art logo carries
+                                   the personality. Everything else is
+                                   structure.
+
+Layout (Hook -> Proof -> Action stack per STYLE_MARKETING):
+
+  IDENTITY  (hook)   ~360 px   TS Farms logo + Barnyard Grill wordmark
+  PROMO     (hook)   ~480 px   featured-item zone — image when supplied,
+                               THIS WEEK headline otherwise
+  MENU      (proof)  ~640 px   three sections: Breakfast, Burgers, Ala Carte
+  ACTION    (action) ~280 px   QR + market info
+
+Run:  python build_menu.py
+Out:  output/menu_<date>_portrait.png
 """
-from PIL import Image, ImageDraw, ImageFont, ImageFilter
+
+from PIL import Image, ImageDraw, ImageFont
 import segno
 import os
 import io
 import json
-import math
-import random
 
-# ---- canvas ----
+
+# ============================================================================
+# Canvas
+# ============================================================================
+
 W, H = 1080, 1920
-HERE = os.path.dirname(os.path.abspath(__file__))
-SPECIALS_PATH = os.path.join(HERE, "specials.json")
-LOGO_PATH = os.path.join(HERE, "assets", "ts_farms_logo_chalk.png")
 
-# ---- weekly content (data, not code) ----
+# Margins (8-px grid)
+MARGIN_X = 80
+MARGIN_TOP = 80
+MARGIN_BOTTOM = 80
+CONTENT_W = W - 2 * MARGIN_X  # 920
+
+# Zone heights — sum to (H - MARGIN_TOP - MARGIN_BOTTOM) = 1760.
+# Menu is the proof — it earns the largest share. Identity and promo are
+# the hook (smaller). Action is the terminal pause (smaller).
+ZONE_IDENTITY = 260
+ZONE_PROMO = 160
+ZONE_MENU = 1100
+ZONE_ACTION = 240
+assert ZONE_IDENTITY + ZONE_PROMO + ZONE_MENU + ZONE_ACTION == H - MARGIN_TOP - MARGIN_BOTTOM
+
+# Padding values — 8-px grid only
+PAD_TIGHT = 8
+PAD_DEFAULT = 16
+PAD_SECTION = 32
+PAD_GENEROUS = 64
+
+
+# ============================================================================
+# Type scale — LED-sized, hierarchy ratios from STANDARD's 5-level system.
+# The logo is the only Level 1 element (the expressive node). All text
+# starts at Level 2. The contrast between levels is the hierarchy signal.
+# ============================================================================
+
+T_WORDMARK = 56   # Level 2 — wordmark (structural, bold uppercase)
+T_SECTION = 48    # Level 2 — section banner (uppercase, bold)
+T_PROMO = 56      # Level 2 — promo headline (THIS WEEK)
+T_ITEM = 40       # Level 3 — item name (bold)
+T_BODY = 26       # Level 4 — descriptions, supporting (regular)
+T_CAPTION = 22    # Level 5 — captions, footer (regular)
+
+
+# ============================================================================
+# Color (ONE_INK OFF, strict in v1: ink + surface only)
+# ============================================================================
+
+INK = (0, 0, 0)
+SURFACE = (255, 255, 255)
+DIVIDER_ALPHA = 48  # ~19% opacity black, applied via RGBA composite
+
+
+# ============================================================================
+# Typeface — ONE_VOICE: DejaVu Sans, regular + bold
+# ============================================================================
+
+F_REGULAR = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
+F_BOLD = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
+
+
+def regular(size):
+    return ImageFont.truetype(F_REGULAR, size)
+
+
+def bold(size):
+    return ImageFont.truetype(F_BOLD, size)
+
+
+# ============================================================================
+# Paths + weekly data
+# ============================================================================
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+LOGO_PATH = os.path.join(HERE, "assets", "ts_farms_logo_menu.png")
+SPECIALS_PATH = os.path.join(HERE, "specials.json")
+
 DEFAULT_SPECIAL = "First market of the season — say hi at the booth!"
 DEFAULT_DATE = "2026-05-02"
+
 try:
-    with open(SPECIALS_PATH) as f:
-        _s = json.load(f)
-    SPECIAL_LINE = _s.get("line", DEFAULT_SPECIAL)
-    MARKET_DATE = _s.get("date", DEFAULT_DATE)
-except (FileNotFoundError, json.JSONDecodeError):
+    with open(SPECIALS_PATH) as fh:
+        _data = json.load(fh)
+    SPECIAL_LINE = _data.get("line", DEFAULT_SPECIAL)
+    MARKET_DATE = _data.get("date", DEFAULT_DATE)
+except Exception:
     SPECIAL_LINE = DEFAULT_SPECIAL
     MARKET_DATE = DEFAULT_DATE
 
 OUT = os.path.join(HERE, "output", f"menu_{MARKET_DATE}_portrait.png")
 
-# ---- palette ----
-BG_DARK = (22, 22, 22)
-BG_GRAD = (34, 34, 34)
-INK = (245, 240, 230)
-INK_DIM = (190, 185, 175)
-YELLOW = (245, 197, 24)
-YELLOW_DARK = (210, 160, 0)
-RED_ACCENT = (200, 60, 50)
 
-# ---- fonts ----
-F_DISPLAY = "/usr/share/fonts/truetype/noto/NotoSans-Black.ttf"
-F_DISPLAY_FALLBACK = "/usr/share/fonts/truetype/ubuntu/Ubuntu-B.ttf"
-F_BODY_BOLD = "/usr/share/fonts/truetype/ubuntu/Ubuntu-B.ttf"
-F_BODY = "/usr/share/fonts/truetype/ubuntu/Ubuntu-R.ttf"
-F_NARROW_BOLD = "/usr/share/fonts/truetype/liberation/LiberationSansNarrow-Bold.ttf"
-F_ITALIC = "/usr/share/fonts/truetype/ubuntu/Ubuntu-RI.ttf"
+# ============================================================================
+# Menu content — single source of truth
+# ============================================================================
 
-def font(path, size):
-    if not os.path.exists(path):
-        path = F_DISPLAY_FALLBACK
-    return ImageFont.truetype(path, size)
-
-# ---- background with chalkboard speckle ----
-img = Image.new("RGB", (W, H), BG_DARK)
-draw = ImageDraw.Draw(img)
-# subtle vertical gradient
-for y in range(H):
-    t = y / H
-    r = int(BG_DARK[0] + (BG_GRAD[0]-BG_DARK[0]) * t)
-    g = int(BG_DARK[1] + (BG_GRAD[1]-BG_DARK[1]) * t)
-    b = int(BG_DARK[2] + (BG_GRAD[2]-BG_DARK[2]) * t)
-    draw.line([(0, y), (W, y)], fill=(r, g, b))
-
-# chalk speckle / texture
-random.seed(1)
-for _ in range(2400):
-    x = random.randint(0, W-1)
-    y = random.randint(0, H-1)
-    a = random.randint(8, 26)
-    draw.point((x, y), fill=(a+30, a+30, a+30))
-# faint horizontal smudges
-for _ in range(60):
-    x = random.randint(0, W-200)
-    y = random.randint(0, H-1)
-    L = random.randint(40, 220)
-    c = random.randint(28, 44)
-    draw.line([(x, y), (x+L, y)], fill=(c, c, c))
+MENU = [
+    ("Breakfast Sandwiches", [
+        ("Oinker", "10",
+         "Sausage patty, cheese, egg — choose Apple Maple, Breakfast, or Jalapeño"),
+        ("Clucker", "10",
+         "Chicken sausage patty, cheese, egg, lettuce, tomato, English muffin"),
+        ("Oinkin' Cluck", "10",
+         "Bacon, egg, cheese, lettuce, tomato, English muffin"),
+        ("Sunny Side Up", "9",
+         "Two fried eggs, cheese, lettuce, tomato, English muffin"),
+    ]),
+    ("Burgers", [
+        ("Cheeseburger", "9",
+         "Four-ounce beef patty, cheese, hand-crafted bun"),
+        ("Barnyard Burger", "12",
+         "Four-ounce beef, egg, cheese, lettuce, tomato, pickle, onion"),
+        ("Bacon Burger", "13",
+         "Four-ounce beef, bacon, cheese, lettuce, tomato, pickle, onion"),
+    ]),
+    ("Ala Carte", [
+        ("Fried Egg", "1", None),
+        ("Double Meat", "2.50", None),
+        ("Bottled Water", "1.50", None),
+    ]),
+]
 
 
-def text_w(d, s, fnt):
-    bbox = d.textbbox((0, 0), s, font=fnt)
-    return bbox[2] - bbox[0]
-def text_h(d, s, fnt):
-    bbox = d.textbbox((0, 0), s, font=fnt)
-    return bbox[3] - bbox[1]
+# ============================================================================
+# Helpers
+# ============================================================================
+
+def text_w(draw, s, fnt):
+    box = draw.textbbox((0, 0), s, font=fnt)
+    return box[2] - box[0]
 
 
-# ---- Yellow brushy banner ----
-def brush_banner(d, x, y, w, h, label, label_font, fill=YELLOW, text_color=(20,20,20)):
-    # main rounded rect with mild rotation feel via offset corners
-    pad = 6
-    rect = (x, y, x+w, y+h)
-    d.rounded_rectangle(rect, radius=14, fill=fill)
-    # ragged edge marks
-    for i in range(8):
-        dx = random.randint(-10, 10)
-        dy = random.randint(-3, 3)
-        d.ellipse((x-12+dx, y+5+dy, x-2+dx, y+h-5+dy), fill=fill)
-        d.ellipse((x+w-8+dx, y+5+dy, x+w+10+dx, y+h-5+dy), fill=fill)
-    # darker bottom shadow
-    d.rounded_rectangle((x+3, y+h-8, x+w-3, y+h-2), radius=6, fill=YELLOW_DARK)
-    tw = text_w(d, label, label_font)
-    th = text_h(d, label, label_font)
-    d.text((x + w/2 - tw/2, y + h/2 - th/1.5), label, font=label_font, fill=text_color)
+def text_h(draw, s, fnt):
+    box = draw.textbbox((0, 0), s, font=fnt)
+    return box[3] - box[1]
 
 
-def hr(y, color=(60,60,60), thickness=2, x1=80, x2=W-80):
-    draw.line([(x1, y), (x2, y)], fill=color, width=thickness)
+def draw_centered(draw, y, s, fnt, fill=INK):
+    w = text_w(draw, s, fnt)
+    draw.text(((W - w) // 2, y), s, font=fnt, fill=fill)
 
 
-# ====================================================================
-# HEADER — TS FARMS logo centered, BARNYARD GRILL wordmark below, tagline
-# ====================================================================
-HDR_TOP = 24
+def draw_divider(img, y, alpha=DIVIDER_ALPHA):
+    """Hairline divider drawn via RGBA composite for partial opacity."""
+    overlay = Image.new("RGBA", (W, 1), (0, 0, 0, 0))
+    od = ImageDraw.Draw(overlay)
+    od.rectangle((MARGIN_X, 0, W - MARGIN_X, 1), fill=(0, 0, 0, alpha))
+    img.paste(overlay, (0, y), overlay)
 
-# logo centered
-logo = Image.open(LOGO_PATH).convert("RGBA")
-lw = 280
-lh = int(logo.height * (lw / logo.width))
-logo = logo.resize((lw, lh), Image.LANCZOS)
-img.paste(logo, ((W - lw)//2, HDR_TOP), logo)
 
-# Title block centered below logo
-def draw_shadowed(d, xy, txt, fnt, fill, shadow=(0,0,0), offset=4):
-    x, y = xy
-    d.text((x+offset, y+offset), txt, font=fnt, fill=shadow)
-    d.text((x, y), txt, font=fnt, fill=fill)
+def make_qr(url, size_px):
+    qr = segno.make(url, error="H")
+    buf = io.BytesIO()
+    qr.save(buf, kind="png", scale=10, dark="#000000", light="#FFFFFF", border=2)
+    buf.seek(0)
+    return Image.open(buf).convert("RGB").resize((size_px, size_px), Image.NEAREST)
 
-# BARNYARD GRILL on one line, sized to fit
-f_title = font(F_DISPLAY, 96)
-title_text = "BARNYARD GRILL"
-tw = text_w(draw, title_text, f_title)
-title_y = HDR_TOP + lh + 8
-# yellow BARNYARD + ink GRILL: render as two pieces to preserve color split
-f_b = font(F_DISPLAY, 96)
-barn_w = text_w(draw, "BARNYARD ", f_b)
-grill_w = text_w(draw, "GRILL", f_b)
-total_w = barn_w + grill_w
-sx = (W - total_w) // 2
-draw_shadowed(draw, (sx, title_y), "BARNYARD", f_b, YELLOW)
-draw_shadowed(draw, (sx + barn_w, title_y), "GRILL", f_b, INK)
 
-# tagline centered
-f_tag = font(F_ITALIC, 34)
-tagline = "Where the farm meets the flame"
-tagw = text_w(draw, tagline, f_tag)
-draw.text(((W - tagw)//2, title_y + 110), tagline, font=f_tag, fill=INK_DIM)
+def wrap_text(draw, s, fnt, max_w):
+    """Greedy word-wrap. Returns a list of lines."""
+    words = s.split()
+    lines = []
+    line = []
+    for word in words:
+        candidate = " ".join(line + [word]) if line else word
+        if text_w(draw, candidate, fnt) <= max_w:
+            line.append(word)
+        else:
+            if line:
+                lines.append(" ".join(line))
+            line = [word]
+    if line:
+        lines.append(" ".join(line))
+    return lines
 
-# ====================================================================
-# THIS WEEK ribbon
-# ====================================================================
-TW_Y = 410
-brush_banner(draw, 80, TW_Y, W-160, 72, "THIS WEEK",
-             font(F_DISPLAY, 44))
-# weekly special text loaded from specials.json
-f_special = font(F_BODY_BOLD, 32)
-sw = text_w(draw, SPECIAL_LINE, f_special)
-draw.text((W/2 - sw/2, TW_Y + 84), SPECIAL_LINE, font=f_special, fill=INK)
 
-# ====================================================================
-# BREAKFAST SANDWICHES
-# ====================================================================
-BS_Y = 560
-brush_banner(draw, 80, BS_Y, 580, 60, "BREAKFAST SANDWICHES",
-             font(F_DISPLAY, 32))
+# ============================================================================
+# Zone renderers
+# ============================================================================
 
-f_item = font(F_BODY_BOLD, 38)
-f_price = font(F_NARROW_BOLD, 38)
-f_desc = font(F_BODY, 22)
+def render_identity(img, y_start):
+    """IDENTITY (hook). The expressive node — TS Farms line-art logo —
+    plus a structural Barnyard Grill wordmark below it.
 
-def menu_row(y, name, price, desc, x=80, total_w=W-160):
-    draw.text((x, y), name, font=f_item, fill=INK)
-    pw = text_w(draw, f"${price}", f_price)
-    draw.text((x + total_w - pw, y), f"${price}", font=f_price, fill=YELLOW)
-    # dotted leader
-    nw = text_w(draw, name, f_item)
-    leader_x1 = x + nw + 18
-    leader_x2 = x + total_w - pw - 14
-    if leader_x2 > leader_x1:
-        for lx in range(leader_x1, leader_x2, 12):
-            draw.ellipse((lx, y+26, lx+3, y+29), fill=(80,80,80))
-    if desc:
-        words = desc.split()
-        line = ""
-        ly = y + 48
-        max_w = total_w
-        for word in words:
-            test = (line + " " + word).strip()
-            if text_w(draw, test, f_desc) > max_w:
-                draw.text((x, ly), line, font=f_desc, fill=INK_DIM)
-                ly += 28
-                line = word
-            else:
-                line = test
-        if line:
-            draw.text((x, ly), line, font=f_desc, fill=INK_DIM)
-        return ly + 30
-    return y + 52
+    The logo carries personality. The wordmark is structure.
+    """
+    draw = ImageDraw.Draw(img)
 
-y = BS_Y + 80
-y = menu_row(y, "OINKER", "10",
-             "Sausage patty (your choice of flavor), cheese, egg, lettuce, tomato — hand-crafted English Muffin")
-y = menu_row(y, "CLUCKER", "10",
-             "Chicken sausage patty, cheese, egg, lettuce, tomato — hand-crafted English Muffin")
-y = menu_row(y, "OINKIN' CLUCK", "10",
-             "Bacon, egg, cheese, lettuce, tomato — hand-crafted English Muffin")
-y = menu_row(y, "SUNNY SIDE UP", "9",
-             "Two fried eggs, cheese, lettuce, tomato — hand-crafted English Muffin")
+    wordmark_h = T_WORDMARK + PAD_DEFAULT
+    logo_max_h = ZONE_IDENTITY - wordmark_h - PAD_DEFAULT
 
-BS_END = y + 8
+    logo = Image.open(LOGO_PATH).convert("RGBA")
+    logo_target_w = 640
+    logo_target_h = round(logo.height * (logo_target_w / logo.width))
+    if logo_target_h > logo_max_h:
+        logo_target_h = logo_max_h
+        logo_target_w = round(logo.width * (logo_target_h / logo.height))
+    logo = logo.resize((logo_target_w, logo_target_h), Image.LANCZOS)
 
-# ====================================================================
-# SAUSAGE FLAVORS + ALA CARTE — side by side
-# ====================================================================
-SA_Y = BS_END + 6
+    logo_x = (W - logo_target_w) // 2
+    logo_y = y_start
+    img.paste(logo, (logo_x, logo_y), logo)
 
-# left block: Sausage flavors
-brush_banner(draw, 80, SA_Y, 460, 54, "SAUSAGE FLAVORS",
-             font(F_DISPLAY, 28))
-f_flavor = font(F_BODY_BOLD, 28)
-flavors = ["Apple Maple", "Breakfast", "Jalapeño Chipotle"]
-for i, fl in enumerate(flavors):
-    draw.text((100, SA_Y + 70 + i*36), f"•  {fl}", font=f_flavor, fill=INK)
+    wordmark_y = logo_y + logo_target_h + PAD_DEFAULT
+    draw_centered(draw, wordmark_y, "BARNYARD GRILL", bold(T_WORDMARK))
 
-# right block: Ala carte
-brush_banner(draw, 560, SA_Y, 440, 54, "ALA CARTE",
-             font(F_DISPLAY, 30))
-f_alc_item = font(F_BODY_BOLD, 28)
-f_alc_price = font(F_NARROW_BOLD, 28)
-ala = [("Fried Egg", "1"), ("Double Meat", "2.50"), ("Bottled Water", "1.50")]
-for i, (n, p) in enumerate(ala):
-    yy = SA_Y + 70 + i*36
-    draw.text((580, yy), n, font=f_alc_item, fill=INK)
-    pw = text_w(draw, f"${p}", f_alc_price)
-    draw.text((1000-pw, yy), f"${p}", font=f_alc_price, fill=YELLOW)
 
-SA_END = SA_Y + 70 + 3*36 + 8
+def render_promo(img, y_start):
+    """PROMO (hook). The featured-item zone. v1 renders a clean THIS WEEK
+    headline plus the weekly special line.
 
-# ====================================================================
-# BURGERS
-# ====================================================================
-BG_Y = SA_END + 8
-brush_banner(draw, 80, BG_Y, 380, 60, "BURGERS",
-             font(F_DISPLAY, 36))
+    Future iterations: replace the text block with a hero image of the
+    featured item, or a video frame composite. The zone height is fixed
+    so the surrounding rhythm is unaffected by the swap.
+    """
+    draw = ImageDraw.Draw(img)
 
-y = BG_Y + 80
-y = menu_row(y, "CHEESEBURGER", "9",
-             "4oz beef patty, cheese — hand-crafted bun")
-y = menu_row(y, "BARNYARD BURGER", "12",
-             "4oz beef patty, egg, cheese, lettuce, tomato, pickle, onion — hand-crafted bun")
-y = menu_row(y, "BACON BURGER", "13",
-             "4oz beef patty, bacon, cheese, lettuce, tomato, pickle, onion — hand-crafted bun")
+    head_y = y_start + PAD_DEFAULT
+    draw_centered(draw, head_y, "THIS WEEK", bold(T_PROMO))
 
-BG_END = y + 4
+    line_font = regular(T_BODY)
+    block_y = head_y + T_PROMO + PAD_DEFAULT
 
-# ====================================================================
-# FRIES — two-up
-# ====================================================================
-FR_Y = BG_END
-brush_banner(draw, 80, FR_Y, 280, 54, "FRIES",
-             font(F_DISPLAY, 30))
-f_fr_item = font(F_BODY_BOLD, 30)
-draw.text((100, FR_Y + 68), "Fries", font=f_fr_item, fill=INK)
-draw.text((420, FR_Y + 68), "$4", font=font(F_NARROW_BOLD, 32), fill=YELLOW)
-draw.text((560, FR_Y + 68), "Cheese Fries", font=f_fr_item, fill=INK)
-draw.text((950, FR_Y + 68), "$5", font=font(F_NARROW_BOLD, 32), fill=YELLOW)
+    lines = wrap_text(draw, SPECIAL_LINE, line_font, CONTENT_W)
+    for i, line in enumerate(lines):
+        draw_centered(draw, block_y + i * (T_BODY + PAD_TIGHT), line, line_font)
 
-FR_END = FR_Y + 54 + 56
 
-# ====================================================================
-# FOOTER — origin line + QR + market info
-# Anchor footer to the bottom so it always renders
-# ====================================================================
-FT_BLOCK_H = 270
-FT_Y = H - FT_BLOCK_H - 30
+def render_menu(img, y_start):
+    """PROOF. The menu — three sections, even rhythm, no ornament.
 
-hr(FT_Y - 14, color=(60,60,60), thickness=2)
+    Each section header: Level 2, bold, uppercase, with a hairline
+    underline that earns its place by separating header from items.
 
-# QR code on right
-qr = segno.make("https://ts-farms.localline.ca", error="H")
-qr_buf = io.BytesIO()
-qr.save(qr_buf, kind="png", scale=10, dark="#f5f0e6", light="#1a1a1a", border=1)
-qr_buf.seek(0)
-qr_img = Image.open(qr_buf).convert("RGB")
-qr_size = 200
-qr_img = qr_img.resize((qr_size, qr_size), Image.NEAREST)
-img.paste(qr_img, (W - qr_size - 80, FT_Y))
+    Each item row: Level 3 bold name, right-flush Level 3 regular price,
+    Level 4 regular description on the next line if present.
+    """
+    draw = ImageDraw.Draw(img)
+    y = y_start + PAD_DEFAULT
 
-# left text block
-f_origin = font(F_BODY_BOLD, 26)
-f_origin_sm = font(F_BODY, 22)
-f_market_hdr = font(F_DISPLAY, 30)
-draw.text((80, FT_Y), "All meats come from our farm.", font=f_origin, fill=INK)
-draw.text((80, FT_Y + 34), "We only use local produce.", font=f_origin, fill=INK)
-draw.text((80, FT_Y + 84), "Find us at Montgomery Farmers Market", font=f_market_hdr, fill=YELLOW)
-draw.text((80, FT_Y + 122), "Saturdays 9 am — May through October", font=f_origin_sm, fill=INK_DIM)
+    section_gap = PAD_SECTION
+    item_gap = PAD_DEFAULT
+    desc_gap = PAD_TIGHT
 
-# QR caption (centered under QR)
-f_qrcap = font(F_BODY_BOLD, 20)
-qr_x = W - qr_size - 80
-cap1 = "ORDER ANYTIME"
-cw = text_w(draw, cap1, f_qrcap)
-draw.text((qr_x + qr_size/2 - cw/2, FT_Y + qr_size + 4), cap1, font=f_qrcap, fill=YELLOW)
-cap2 = "ts-farms.localline.ca"
-cw2 = text_w(draw, cap2, f_origin_sm)
-draw.text((qr_x + qr_size/2 - cw2/2, FT_Y + qr_size + 28), cap2, font=f_origin_sm, fill=INK_DIM)
+    f_section = bold(T_SECTION)
+    f_item = bold(T_ITEM)
+    f_price = regular(T_ITEM)
+    f_desc = regular(T_BODY)
 
-# bottom signature
-f_sig = font(F_ITALIC, 22)
-sig = "TS Farms · New Vienna, Ohio · (937) 763-3917"
-sw = text_w(draw, sig, f_sig)
-draw.text((W/2 - sw/2, H - 50), sig, font=f_sig, fill=INK_DIM)
+    for section_i, (section_label, items) in enumerate(MENU):
+        if section_i > 0:
+            y += section_gap
 
-# Save
-os.makedirs(os.path.dirname(OUT), exist_ok=True)
-img.save(OUT, "PNG", optimize=True)
-print(f"Wrote {OUT} ({os.path.getsize(OUT)} bytes)")
+        draw.text((MARGIN_X, y), section_label.upper(), font=f_section, fill=INK)
+        y += T_SECTION + PAD_TIGHT
+
+        draw_divider(img, y)
+        y += PAD_DEFAULT
+
+        for name, price, desc in items:
+            draw.text((MARGIN_X, y), name, font=f_item, fill=INK)
+            price_text = f"${price}"
+            pw = text_w(draw, price_text, f_price)
+            draw.text((W - MARGIN_X - pw, y), price_text, font=f_price, fill=INK)
+            y += T_ITEM
+
+            if desc:
+                y += desc_gap
+                lines = wrap_text(draw, desc, f_desc, CONTENT_W)
+                for line in lines:
+                    draw.text((MARGIN_X, y), line, font=f_desc, fill=INK)
+                    y += T_BODY + 4
+                y -= 4  # remove the final inter-line gap
+            y += item_gap
+
+
+def render_action(img, y_start):
+    """ACTION. QR + market info. The final, isolated decision surface.
+
+    Per STYLE_MARKETING: the largest gap above any element on the page
+    sits above the action. The reader crosses that gap as a micro-commitment.
+    Layout: QR on left, info on right, both vertically centered in the zone.
+    """
+    draw = ImageDraw.Draw(img)
+
+    qr_size = 200
+    qr = make_qr("https://ts-farms.localline.ca", qr_size)
+
+    qr_x = MARGIN_X
+    qr_y = y_start + (ZONE_ACTION - qr_size) // 2
+    img.paste(qr, (qr_x, qr_y))
+
+    info_x = qr_x + qr_size + PAD_GENEROUS
+
+    f_action = bold(T_SECTION)
+    f_url = regular(T_BODY)
+    f_meta = regular(T_CAPTION)
+
+    line1 = "ORDER ANYTIME"
+    line2 = "ts-farms.localline.ca"
+    line3 = "Saturdays · 9 am · Montgomery Farmers Market"
+
+    h_total = T_SECTION + PAD_DEFAULT + T_BODY + PAD_DEFAULT + T_CAPTION
+    info_y = y_start + (ZONE_ACTION - h_total) // 2
+
+    draw.text((info_x, info_y), line1, font=f_action, fill=INK)
+    info_y += T_SECTION + PAD_DEFAULT
+
+    draw.text((info_x, info_y), line2, font=f_url, fill=INK)
+    info_y += T_BODY + PAD_DEFAULT
+
+    draw.text((info_x, info_y), line3, font=f_meta, fill=INK)
+
+
+# ============================================================================
+# Main
+# ============================================================================
+
+def build():
+    img = Image.new("RGB", (W, H), SURFACE)
+
+    y = MARGIN_TOP
+    render_identity(img, y)
+    y += ZONE_IDENTITY
+
+    draw_divider(img, y)
+    render_promo(img, y)
+    y += ZONE_PROMO
+
+    draw_divider(img, y)
+    render_menu(img, y)
+    y += ZONE_MENU
+
+    draw_divider(img, y)
+    render_action(img, y)
+
+    return img
+
+
+if __name__ == "__main__":
+    os.makedirs(os.path.dirname(OUT), exist_ok=True)
+    img = build()
+    img.save(OUT, "PNG", optimize=True)
+    print(f"Wrote {OUT} ({os.path.getsize(OUT)} bytes)")

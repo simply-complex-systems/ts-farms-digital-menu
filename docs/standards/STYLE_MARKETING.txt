@@ -1,0 +1,419 @@
+STYLE_MARKETING
+Purpose: Attention-economics style foundation. Governs print collateral
+and digital promotion -- any context where the document competes for
+attention against other stimuli and must convert that attention into
+action.
+Status: LIVING STANDARD
+Created: 2026-04-11
+Parent: STANDARD_FORMATTING
+Children: None declared.
+
+This file inherits everything from STANDARD_FORMATTING and declares
+only what shifts. If a property is not named here, the root governs.
+
+================================================================================
+1. PURPOSE
+================================================================================
+
+Marketing lives in the tension between attention and trust. The reader
+did not ask for this document. It arrived -- in a feed, a mailbox, a
+rack, a screen. The document has seconds, not minutes. Every element
+either earns continued attention or loses it.
+
+The root constraints still govern. Symmetry is on. Survive is on.
+Predictability is on. These are not relaxed for marketing -- they are
+the reason marketing works. A chaotic layout signals chaos. A
+predictable layout signals competence. Trust is the conversion
+mechanism, not cleverness.
+
+This style governs two families:
+
+PRINT COLLATERAL -- flyers, one-pagers, brochures, sell sheets, print
+ads, posters. Fixed dimensions. No scroll. No state. The reader sees
+the whole surface at once.
+
+DIGITAL PROMOTION -- social media assets, display ads, landing page
+heroes, banner graphics. Variable dimensions. May scroll. May animate.
+The reader sees a fragment first and decides whether to continue.
+
+Both families share the same hierarchy: hook, proof, action. The
+layout differs. The economics do not.
+
+================================================================================
+2. TOGGLE POSITIONS
+================================================================================
+
+ONE_VOICE -- ON
+One typeface. Marketing does not need typographic variety. It needs
+typographic authority. Hierarchy is expressed through size, weight,
+and case. A second typeface splits attention between two personalities
+when the document can only afford one.
+
+ONE_INK -- OFF
+Marketing contexts introduce brand colors. Additional colors earn
+their place by carrying distinct information:
+  -- Primary brand color: one. Used for the action element (CTA) and
+     nowhere else. The action is the only element that earns color
+     distinction from the ink system.
+  -- Secondary brand color: permitted only if it carries a different
+     structural role than primary -- e.g., category indicator, accent
+     on proof elements. If secondary does the same work as primary,
+     it does not enter.
+  -- Background surface may shift from white when brand requires.
+     Ink color inverts to maintain contrast. TWO colors of ink
+     against surface maximum. Ink plus brand-action. No third ink.
+
+Entry rule: a color enters only by carrying information the reader
+cannot get from position or typography alone. If the hierarchy works
+in black and white, the color is decorative. Decorative color does
+not enter.
+
+BREATHE -- FULL
+White space is a luxury signal. Dense marketing communicates
+desperation -- too much to say, too little confidence in any of it.
+Generous spacing communicates authority. The reader trusts what has
+room to breathe. The page is unhurried even when the message is
+urgent.
+
+EARNED_DISTINCTION -- RELAXED
+The root sets this to STRICT. Marketing relaxes it. Limited ornament
+is permitted where it serves impact without misleading hierarchy.
+
+What relaxed permits:
+  -- Oversized type at Level 1 beyond the root 16pt ceiling when
+     the headline is the expressive node (see ONE_EXPRESSIVE_NODE).
+  -- A single visual flourish -- a background texture, a geometric
+     accent, a brand pattern -- that does not compete with content.
+  -- Rounded corners, subtle shadows, or border treatments on the
+     CTA element to distinguish it from the content plane.
+
+What relaxed does not permit:
+  -- Multiple elements competing for ornamental attention.
+  -- Ornament on body text, proof elements, or metadata.
+  -- Decorative borders or dividers that do not separate content.
+  -- Animation or motion effects on non-action elements (digital).
+
+The test: remove the ornament. Does the hierarchy survive? If yes,
+the ornament is earned. If no, the ornament is structural and should
+be expressed through the type system instead.
+
+ONE_EXPRESSIVE_NODE -- ON
+One element carries personality. Everything else is structure. In
+marketing, the expressive node is either:
+  -- The hero image, or
+  -- The headline.
+Never both. If the image is expressive, the headline is structural
+(clear, direct, typographically restrained). If the headline is
+expressive (large, stylized, personality-forward), the image is
+structural (supporting, contextual, restrained).
+
+The expressive node is the entry point. The reader's eye lands here
+first. Everything else guides the eye from this point to the action.
+
+================================================================================
+3. TYPE SYSTEM SHIFTS
+================================================================================
+
+The root defines five levels at 16, 14, 12, 10, 8. Marketing
+increases contrast between levels to sharpen hierarchy at a glance.
+
+LEVEL    ROOT    MARKETING    ROLE
+  1       16      24-36       Hook. Headline. The entry point.
+  2       14      14-16       Subhead. Bridge between hook and proof.
+  3       12      12          Proof text. Testimonials. Feature names.
+  4       10      10          Body. Supporting detail. Terms.
+  5        8       8          Legal. Disclaimer. Fine print.
+
+Level 1 is the only level with a range. The size within that range
+is determined by the headline's role:
+  -- If headline is the expressive node: upper range (28-36).
+  -- If headline is structural (image is expressive): lower range
+     (24-28).
+
+The range does not mean the agent chooses freely. The agent selects
+the size that fills the available width at a natural line break. A
+headline that wraps mid-phrase to hit a target size has failed. The
+content determines the size. The size does not determine the content.
+
+Bold usage shifts:
+  -- Level 1: bold permitted but not required. The size carries
+     sufficient hierarchy signal.
+  -- Level 2: bold. Always. The subhead must anchor between the
+     headline and body without getting lost.
+  -- Level 3: bold on feature names or proof labels only. Body
+     proof text is regular.
+  -- Levels 4-5: regular. No bold in supporting text.
+
+Uppercase shifts:
+  -- Level 2 subheads: uppercase when used as a category label
+     (e.g., "FEATURES", "TESTIMONIALS"). Sentence case when used
+     as a narrative bridge.
+  -- CTA text: uppercase. The action is categorical.
+
+================================================================================
+4. PAGE GEOMETRY & LAYOUT
+================================================================================
+
+PRINT COLLATERAL
+
+Paper: US Letter default. Other sizes declared per piece.
+Margins: root values (top 720, bottom 720, left 1440, right 1440 DXA)
+as minimum. Marketing may increase margins. Marketing never decreases
+margins. Tighter margins do not create more impact -- they create more
+noise.
+
+THE Z-PATTERN
+
+Print collateral follows the Z-pattern -- the natural scan path of a
+reader encountering a fixed-dimension page:
+
+  1. TOP-LEFT -- Entry. The eye lands here first. Brand mark or
+     headline anchor.
+  2. TOP-RIGHT -- Secondary anchor. Date, tagline, or supporting
+     identity.
+  3. DIAGONAL -- The eye sweeps from top-right to bottom-left,
+     crossing the proof zone. Social proof, features, supporting
+     evidence sit along or near this diagonal.
+  4. BOTTOM-RIGHT -- Terminal. The call to action lives here. The
+     eye's natural resting point. The last thing seen is the first
+     thing acted on.
+
+The Z-pattern is not a grid -- it is a scan path. The grid supports
+it. Elements align to the grid but are prioritized by their position
+in the Z-path.
+
+THE HOOK-PROOF-ACTION STACK
+
+The vertical hierarchy for any marketing layout:
+
+  HOOK -- Top third. Headline, hero image, or both. Earns continued
+  attention. Answers: "Why should I keep looking?"
+
+  PROOF -- Middle third. Evidence. Testimonials, features, data,
+  social proof. Answers: "Why should I believe this?"
+
+  ACTION -- Bottom third. CTA. Contact information. Next step.
+  Answers: "What do I do now?"
+
+The thirds are approximate. The hook may take 40% on an image-led
+piece. The proof may compress to 20% on a simple offer. But the
+sequence is fixed. Hook before proof. Proof before action. No
+exceptions.
+
+DIGITAL PROMOTION
+
+Dimensions: declared per asset. No default. Social platforms,
+display networks, and landing pages each impose their own viewport.
+
+Single-column for vertical assets (stories, pins). The
+hook-proof-action stack maps directly.
+
+For horizontal assets (banners, display): the Z-pattern compresses
+to a left-to-right read. Hook left, proof center, action right.
+
+Landing page heroes follow the hook-proof-action stack with scroll
+as the transition between zones.
+
+DOMINANT VISUAL PLACEMENT
+
+One image dominates. It occupies the largest visual area in the
+layout. It is either the expressive node (carrying personality) or
+the proof anchor (demonstrating the product, showing the result).
+
+Placement rules:
+  -- The dominant visual touches or crosses the centerline of the
+     layout. It is not pushed to a corner.
+  -- Text does not overlay the focal point of the image. If text
+     must overlay, the image provides a low-contrast region for it
+     (natural negative space, gradient overlay, or solid band).
+  -- No other image competes in scale. Secondary images, if present,
+     are less than 25% of the dominant image's area.
+
+================================================================================
+5. VERTICAL SPACING
+================================================================================
+
+Root rhythm (1.15 / 276 DXA) holds for body text. Shifts below.
+
+HEADLINE (Level 1):    before 0, after 200
+  Space after headline is the largest gap on the page. It
+  separates the hook from everything below and signals
+  confidence. The headline does not crowd its proof.
+
+SUBHEAD (Level 2):     before 160, after 60
+  Bridges hook and proof. Enough space above to separate from
+  headline, tight below to bind to proof content.
+
+PROOF ELEMENT:         before 80, after 80
+  Even spacing. Proof elements are peers -- testimonials, features,
+  data points. Equal spacing signals equal weight.
+
+CTA:                   before 240, after 0
+  The largest gap above any element. The action is separated from
+  proof by a decisive pause. The reader must cross space to reach
+  it. This is intentional. The space is a threshold -- crossing it
+  is a micro-commitment.
+
+LEGAL / FINE PRINT:    before 120, after 0
+  Separated from CTA. Present but not competing.
+
+Principle: the vertical gaps get larger as the reader moves down
+the page. Hook is dense with energy. Proof is evenly spaced. Action
+is isolated. Legal is distant. The rhythm decelerates. The reader
+arrives at the action with room to decide.
+
+================================================================================
+6. STRUCTURAL ELEMENTS
+================================================================================
+
+HERO IMAGE / HEADLINE
+The expressive node (see toggle). One of these carries personality.
+The other is structure. The agent determines which based on the
+content: if the image is strong (product shot, result photo, human
+face), it leads. If the image is generic or absent, the headline
+leads.
+
+SOCIAL PROOF
+Placement: middle third, along or near the Z-pattern diagonal.
+Forms: testimonial quotes (attributed, real), data points (specific
+numbers, not vague claims), client logos (if recognized -- unknown
+logos are noise, not proof), case result summaries.
+
+Rules:
+  -- Social proof is specific. "Trusted by thousands" is not proof.
+     "12,847 customers in 2025" is proof.
+  -- Attribution is required. Unattributed quotes are fiction.
+  -- Three proof elements maximum. More dilutes. The strongest three
+     outperform five adequate ones.
+
+CALL TO ACTION (CTA)
+One primary CTA per layout. One. Not two, not three. A secondary
+CTA is permitted only if it serves a different audience or a
+different commitment level (e.g., "Buy now" primary, "Learn more"
+secondary).
+
+Design:
+  -- CTA is the only element that earns the primary brand color as
+     a fill or border.
+  -- CTA text is uppercase, Level 4 size, bold.
+  -- CTA has the highest contrast ratio on the page. If the page is
+     white, the CTA is dark (or brand-colored) on white. If the
+     page is dark, the CTA is light on dark.
+  -- CTA does not hide. It is visible without scrolling on digital.
+     It is in the bottom-right quadrant on print.
+  -- CTA states the action, not the feeling. "Start your trial" not
+     "Feel the difference." The reader decides what to feel.
+
+DIVIDERS
+Minimal. Marketing uses white space as the primary separator. A
+divider appears only between the proof zone and the action zone
+if the spacing alone does not create sufficient separation. When
+used: single line, 1pt, reduced opacity. Same as root.
+
+COLOR ENTRY
+When brand colors enter per ONE_INK OFF:
+  -- Declare the palette: primary, secondary (if earned), surface.
+  -- Map each color to exactly one structural role.
+  -- Test: render the layout in grayscale. If hierarchy collapses,
+     color is doing structural work that typography should handle.
+     Fix the typography, then restore color.
+
+================================================================================
+7. DESIGN HEURISTICS
+================================================================================
+
+The agent decision sequence for marketing contexts. Extends root
+heuristics, does not replace them.
+
+STEP 1 -- IDENTIFY THE ATTENTION BUDGET
+Every element on the page costs attention. The budget is finite and
+small -- seconds, not minutes. Before placing any element, ask: does
+this earn its cost? If the answer is uncertain, the element does not
+appear.
+
+The attention budget is not metaphorical. It is the literal time a
+reader spends before deciding to engage or leave. Every element that
+does not serve hook, proof, or action is spending budget without
+earning return.
+
+STEP 2 -- DETERMINE THE EXPRESSIVE NODE
+Image or headline. Not both. The content determines which. If the
+agent has a strong image, the image leads. If not, the headline
+leads. If neither is strong, the layout has a content problem, not
+a design problem. Surface to THE_USER.
+
+STEP 3 -- LAY THE Z-PATH (print) OR STACK (digital)
+Place the four Z-path anchors or the three stack zones. Everything
+else arranges relative to these. No element floats outside the path.
+
+STEP 4 -- PLACE PROOF IN THE MIDDLE
+Three elements maximum. Specific. Attributed. If proof is weak,
+the layout will not save it. Surface to THE_USER.
+
+STEP 5 -- ISOLATE THE ACTION
+CTA gets the most space above it of any element on the page. It
+sits at the terminal point. It is the destination the layout has
+been guiding the reader toward.
+
+STEP 6 -- REMOVE
+The last step is subtraction. Look at every element. Remove one.
+Does the layout still work? If yes, it was not earning its place.
+Continue until every remaining element is load-bearing.
+
+ANTI-PATTERNS
+
+EVERYTHING COMPETES -- Multiple headlines, multiple images at equal
+scale, multiple CTAs at equal weight. The reader's eye has no path.
+Nothing is primary because everything claims to be. Fix: choose one
+winner at each level. The rest support.
+
+STOCK PHOTOGRAPHY THAT COMMUNICATES NOTHING -- A smiling person
+shaking hands. A laptop on a desk. A city skyline. These images
+occupy space without earning it. They cost attention and deliver
+no information. Fix: use a product image, a result image, or no
+image. An empty space is better than a meaningless one.
+
+CALLS TO ACTION THAT HIDE -- CTA buried in body text. CTA in the
+same color as everything else. CTA worded as a suggestion rather
+than an action. Fix: the CTA is the highest-contrast element. It
+states a verb. It is visually distinct from every other element.
+
+CLEVER COPY THAT OBSCURES THE OFFER -- Headlines that require
+decoding. Puns that delay comprehension. Wordplay that prioritizes
+the writer's wit over the reader's understanding. Fix: the headline
+communicates the offer in the time it takes to read it once. If
+rereading is required, rewrite.
+
+URGENCY WITHOUT SUBSTANCE -- "Limited time!" with no deadline.
+"Only a few left!" with no number. "Act now!" with no reason.
+Manufactured urgency erodes trust. Fix: urgency is specific and
+true, or it does not appear. "Offer ends April 30" is urgency.
+"Hurry!" is noise.
+
+DENSITY AS THOROUGHNESS -- Filling every inch of the layout because
+there is more to say. The reader does not reward thoroughness in
+marketing. The reader rewards clarity. Fix: say less. Say it with
+space around it. Let the proof do the persuading.
+
+================================================================================
+RULES
+================================================================================
+
+1. Load STANDARD_FORMATTING before this file. This file does not
+   repeat root content. If a property is not declared here, the
+   root governs.
+2. Load this file before building any marketing collateral or
+   promotional asset.
+3. ONE_EXPRESSIVE_NODE is always on. One element carries personality.
+   The agent determines which based on content strength.
+4. Brand colors enter through ONE_INK OFF. Every color earns its
+   place by carrying information. Test in grayscale.
+5. EARNED_DISTINCTION is RELAXED, not OFF. Limited ornament is
+   permitted. Ornament on non-expressive elements is not permitted.
+6. The hook-proof-action sequence is fixed. No layout reorders it.
+7. One primary CTA per layout. One.
+8. Urgency is specific and true, or absent.
+9. The last design step is always subtraction.
+10. This file updates through COMMIT. Changes are explicit.
+
+INTEGRITY_CHECK: STYLE_MARKETING loaded completely.

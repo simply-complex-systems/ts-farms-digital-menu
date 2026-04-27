@@ -1,0 +1,305 @@
+STANDARD_FORMATTING
+Purpose: Root formatting and design standard. Governs all agent-produced
+documents. Carries the aesthetic philosophy, the type system, design
+heuristics, and the style catalog. Load this file. The agent executes
+on the first try.
+Status: LIVING STANDARD
+Created: 2026-04-11
+Parent: None. This is the root.
+Children: STYLE_DOCUMENT, STYLE_WEB, STYLE_MOBILE, STYLE_EMAIL,
+          STYLE_MARKETING, STYLE_REPORTS, STYLE_INTERACTIVE
+
+================================================================================
+THE TEST
+================================================================================
+
+THE_USER requests a document in a novel context using these terms. The
+output meets the standard without revision. If it does not, this file
+has a gap. Name the gap and update.
+
+================================================================================
+CONSTRAINTS
+================================================================================
+
+Constraints are always on. They are rooted in how human perception works.
+No mode turns them off.
+
+SYMMETRY
+Spacing is never a source of contrast. All spacing values are evenly
+distributed across all expressions. Margins, line spacing, gaps between
+elements -- symmetrical at all times. The brain registers every spatial
+relationship. When those relationships are inconsistent, the reader
+experiences discomfort with no source. The document feels wrong.
+Symmetrical spacing removes noise from the channel between content and
+reader. This is not a preference. It is a perceptual requirement.
+
+SURVIVE
+The aesthetic depends only on properties that persist across environments.
+If a property does not survive format translation -- between applications,
+between screen and print, between static and dynamic -- it is decorative,
+not structural. Design for survival. Fragile beauty is not beauty.
+
+PREDICTABILITY
+Scrolling feels smooth and consistent. Everything cascades with perfect
+predictability. Nothing surprises. No asymmetries. No ornament that calls
+attention to itself. The design should seem natural, like it has always
+been there. The reader never notices the container. The content arrives
+without friction.
+
+================================================================================
+TOGGLES
+================================================================================
+
+Toggles are named principles with movable positions. Each controls one
+axis of the aesthetic. Their positions vary by audience and medium. A
+style file declares toggle positions. The root declares the toggles.
+
+ONE_VOICE
+One typeface, or more than one.
+  ON: hierarchy expressed through size, weight, and case only. One font.
+  OFF: multiple typefaces, each with a distinct structural role.
+
+ONE_INK
+One ink per expression.
+  ON: consistency within the expression. When text is black, everything
+  is black. When text is white, everything is white. Two colors total:
+  ink and surface.
+  OFF: multiple ink colors, each earned by carrying distinct information.
+
+BREATHE
+White space is structural. Line spacing, margins, and vertical gaps
+give the reader room.
+  FULL: generous spacing, wide margins. The page is unhurried.
+  TIGHT: compressed for dense reference. Still present. Never off.
+
+EARNED_DISTINCTION
+Every visual difference carries information. Bold, size change, caps,
+a divider -- each teaches the reader something about hierarchy.
+  STRICT: zero ornament. Every distinction is structural.
+  RELAXED: limited ornament where it serves warmth without misleading
+  hierarchy.
+
+ONE_EXPRESSIVE_NODE
+Personality concentrated or distributed.
+  ON: one element carries personality. Everything else is structure.
+  OFF: personality distributed. Each expressive element earns its place.
+
+================================================================================
+TYPE SYSTEM
+================================================================================
+
+Five levels. Integer sizes only. No fractional points.
+
+LEVEL    SIZE    ROLE
+  1       16     Title. Document name. Primary identity.
+  2       14     Section header. Major structural division.
+  3       12     Subsection. Entry header. Secondary structure.
+  4       10     Body. Running text. The default.
+  5        8     Caption. Footnote. Contact. Metadata.
+
+RULES
+
+Integer only. No 10.5, no 9.5, no 11. Integers.
+
+Bold is structural. Bold marks hierarchy -- it tells the reader where
+they are in the document. Bold is never used for emphasis within body
+text. If a word needs emphasis, the sentence needs rewriting.
+
+Uppercase is categorical. Uppercase marks type or category -- it tells
+the reader what kind of thing they are looking at. Section headers,
+column labels, status indicators. Uppercase is never decorative.
+
+Two colors. Black and white. Transparency is the only modifier. No
+accent colors. No grays defined by hex -- only by opacity against the
+surface. If a third color enters, it is declared in the style file
+with a structural justification.
+
+Zero letter-spacing. No character-spacing adjustments. The typeface
+designer set the spacing. Overriding it introduces a variable that
+does not survive all environments and creates inconsistency between
+elements that should match.
+
+One weight axis. Regular and bold. No light, no semibold, no black.
+Two positions on the weight axis. The contrast between them is the
+hierarchy signal. More positions dilute the signal.
+
+================================================================================
+PAGE GEOMETRY
+================================================================================
+
+Paper: US Letter (12240 x 15840 DXA).
+Orientation: Portrait unless declared otherwise.
+Margins: top 720, bottom 720, left 1440, right 1440 DXA.
+Content width: 9360 DXA (12240 - 1440 - 1440).
+
+These are defaults. A style file may override with justification.
+Margin overrides must maintain symmetry (left equals right).
+
+================================================================================
+VERTICAL SPACING
+================================================================================
+
+Line spacing: 1.15 (276 DXA, lineRule auto). Global. The reading
+rhythm. Do not override without declaring why.
+
+Spacing is defined as before/after pairs. The values below are the
+base. Style files inherit or override.
+
+TITLE:              before 0, after 120
+SECTION HEADER:     before 240, after 60
+SUBSECTION:         before 120, after 40
+BODY:               before 0, after 120
+CAPTION:            before 40, after 0
+
+The principle: vertical gaps are consistent multiples. The reader
+should feel a rhythm, not a sequence of ad hoc decisions.
+
+================================================================================
+STRUCTURAL ELEMENTS
+================================================================================
+
+SECTION DIVIDERS
+Bottom border on section header paragraph. Single line, 4pt,
+color determined by ink system (black at full or reduced opacity).
+Space between text and line: 2pt.
+
+TAB STOPS
+Right-aligned tab at content width (9360 DXA) for date alignment
+and right-flush metadata. One tab stop per layout need. No stacking.
+
+TABLES
+Column widths in DXA. Always explicit. Never percentage-based
+(percentage breaks in Google Docs). Cell padding: top 80, bottom 80,
+left 120, right 120. Borders: single, 1pt, reduced opacity or
+matching ink system.
+
+HEADERS AND FOOTERS
+Minimal. Page numbers if the document exceeds one page. No branding
+unless the style file declares it. Footer content at Level 5 size.
+
+================================================================================
+DESIGN HEURISTICS
+================================================================================
+
+When an agent sits down to build a document, this is the sequence.
+Each step completes before the next begins.
+
+STEP 1 -- IDENTIFY THE AUDIENCE
+Who reads this? The audience selects the style file. If no style
+file exists for this audience, derive from the closest match and
+surface the deviation.
+
+STEP 2 -- LOAD THE CONSTRAINTS
+Symmetry is on. Survive is on. Predictability is on. These do not
+vary. Read the toggle positions from the style file.
+
+STEP 3 -- SET THE GRID
+Page geometry. Margins. Content width. Column structure if any.
+The grid is the skeleton. Every element lives on the grid. Nothing
+floats outside it.
+
+STEP 4 -- ESTABLISH THE TYPE HIERARCHY
+Map the five levels to the document's needs. Not every document
+uses all five. A one-pager may use three. A report may use all
+five. Assign levels to roles: what is the title, what are sections,
+what is body, what is metadata.
+
+STEP 5 -- DEFINE THE VERTICAL RHYTHM
+Spacing between elements. Consistent multiples. The reader should
+feel the rhythm without seeing it. Test: scroll the document at a
+steady pace. If the eye catches on an irregular gap, the rhythm
+is broken.
+
+STEP 6 -- PLACE STRUCTURAL ELEMENTS
+Dividers, tab stops, tables, headers, footers. Each earns its
+place by carrying information. If a structural element does not
+help the reader navigate, it does not appear.
+
+STEP 7 -- CHECK AGAINST CONSTRAINTS
+Before producing output, verify:
+  -- Is every spacing value symmetrical with its peers?
+  -- Does every visual distinction carry information?
+  -- Will this survive format translation?
+  -- Is the design predictable from top to bottom?
+  -- Would a reader notice the formatting? (They should not.)
+
+================================================================================
+STYLE CATALOG
+================================================================================
+
+Each entry names a style, its purpose, and where it deviates from the
+root. Full specifications live in the child style files. This catalog
+is the map.
+
+STYLE_DOCUMENT
+  Purpose:    Static documents with fixed dimensions and no state.
+              Resumes, letters, reports, one-pagers, cut sheets.
+  Base style. Minimal deviation from root. This is what the root
+  was built for.
+
+STYLE_WEB
+  Purpose:    Screen-native layouts. Landing pages, content pages,
+              documentation. Scroll-aware. Responsive.
+  Key shifts: fluid type (clamp-based), dark mode as peer context,
+              responsive breakpoints, scroll-aware hierarchy.
+
+STYLE_MOBILE
+  Purpose:    Small viewport, touch interaction, interruptibility.
+  Key shifts: single-column, thumb-zone action placement, increased
+              touch targets, density earned by frequency of use.
+
+STYLE_EMAIL
+  Purpose:    Hostile-environment design. Must survive every client.
+  Key shifts: table-based layout, system font stacks, 600px max
+              width, inline styles only.
+
+STYLE_MARKETING
+  Purpose:    Attention economics. Print collateral and digital
+              promotion.
+  Key shifts: hook-proof-action hierarchy, one dominant visual,
+              high contrast, EARNED_DISTINCTION relaxed for impact.
+
+STYLE_REPORTS
+  Purpose:    Information-dense layouts. Dashboards, data tables,
+              charts, analytical documents.
+  Key shifts: BREATHE tight, increased Level 5 usage, grid-heavy,
+              data-ink ratio maximized, minimal chrome.
+
+STYLE_INTERACTIVE
+  Purpose:    Forms, configurators, tools. State-driven documents.
+  Key shifts: fixed structure with dynamic content, confirmed state
+              as visual language (the negative), input surface
+              hierarchy by opacity, tile separation.
+
+================================================================================
+CONSTRUCTION
+================================================================================
+
+Static documents (.docx): build with docx-js (npm docx). Validate
+after build. For elements docx-js cannot produce natively: build
+base, unpack XML, inject, repack.
+
+HTML documents: single-file. No build step. CDN for fonts only.
+
+PDF generation: embed fonts. No fallback to system fonts in final
+output. Development may use fallback with documented restoration
+step.
+
+COMPATIBILITY
+Google Docs strips: character-spacing, text box autofit, some tab
+stops. Design without reliance on these. If a property does not
+survive, it is decorative per SURVIVE constraint.
+
+================================================================================
+RULES
+================================================================================
+
+1. Load this file before building any document in a session.
+2. Load the appropriate style file alongside this file.
+3. Do not deviate from root values without surfacing the deviation.
+4. Style files inherit everything and declare only what shifts.
+5. This file updates through COMMIT. Changes are explicit.
+6. The test is first-try execution. If revision is needed, the
+   standard has a gap. Name it.
+
+INTEGRITY_CHECK: STANDARD_FORMATTING loaded completely.
